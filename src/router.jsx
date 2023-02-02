@@ -9,6 +9,7 @@ import Signup from "./views/Signup";
 import Users from "./views/Users";
 import Dashboard from './views/Dashboard'
 
+// Routes
 const router = createBrowserRouter([
   {
     path: "/",
