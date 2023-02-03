@@ -7,32 +7,18 @@ import Login from "./views/Login";
 import NotFound from "./views/NotFound";
 import Signup from "./views/Signup";
 import Users from "./views/Users";
-import Dashboard from './views/Dashboard'
+import Dashboard from "./views/Dashboard";
 
 // Routes
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <GuestLayout />,
-    children: [
-        {
-            path: '/',
-            element: <Navigate to='users'/>
-        },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/signup",
-        element: <Signup />,
-      },
-    ],
-  },
-  {
-    path: "/",
     element: <DefaultLayout />,
     children: [
+      {
+        path: "/",
+        element: <Navigate to='/users' />,
+      },
       {
         path: "/dashboard",
         element: <Dashboard />,
@@ -40,6 +26,21 @@ const router = createBrowserRouter([
       {
         path: "/users",
         element: <Users />,
+      },
+    ],
+  },
+  {
+    path: "/",
+    element: <GuestLayout />,
+    children: [
+      
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
       },
     ],
   },
