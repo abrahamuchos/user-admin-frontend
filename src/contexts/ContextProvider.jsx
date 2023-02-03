@@ -27,6 +27,7 @@ export const ContextProvider = ({ children }) => {
         user,
         token,
         setToken,
+        setUser
       }}
     >
       {children}
