@@ -1,15 +1,16 @@
-import React, { useRef } from "react";
-import { Link } from "react-router-dom";
+import React, {useRef, useState} from "react";
+import {Link} from "react-router-dom";
 import axiosClient from "../axios-client";
 
-import { useStateContext } from "../contexts/ContextProvider";
+import {useStateContext} from "../contexts/ContextProvider";
 
 export default function Signup() {
   const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const passwordConfirmRef = useRef();
-  const { setToken, setUser } = useStateContext();
+  const [errors, setErrors] = useState(null);
+  const {setToken, setUser} = useStateContext();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,30 +18,42 @@ export default function Signup() {
       name: nameRef.current.value,
       email: emailRef.current.value,
       password: passwordRef.current.value,
-      password_confirm: passwordConfirmRef.current.value,
+      password_confirmation: passwordConfirmRef.current.value,
     };
 
     axiosClient
       .post("/signup", payload)
-      .then(({ data }) => {
+      .then(({data}) => {
         setUser(data.user);
         setToken(data.token);
       })
       .catch((err) => {
+        console.log('FLAG', err);
         const response = err.response;
-        if (response && response.status == 422) {
-          console.log(response.data.errors);
+        if (response && response.status === 422) {
+          setErrors(response.data.errors)
+        }else{
+          console.error(err);
+          setErrors({
+            errors: 'Please contact with admin'
+          })
         }
-      });
+      })
+
   };
 
   return (
     <div className='login-signup-form animated fadeInDown'>
       <form action='' className='form' onSubmit={handleSubmit}>
         <h1 className='title'>Signup for free</h1>
-        <input ref={nameRef} type='text' placeholder='Full name' />
-        <input ref={emailRef} type='email' placeholder='Email' />
-        <input ref={passwordRef} type='password' placeholder='Password' />
+        {/* Inputs errors*/}
+        {errors && <div className="alert">
+          {Object.values(errors).map((row, index) => <p key={index}>{row}</p>)}
+        </div>
+        }
+        <input ref={nameRef} type='text' placeholder='Full name'/>
+        <input ref={emailRef} type='email' placeholder='Email'/>
+        <input ref={passwordRef} type='password' placeholder='Password'/>
         <input
           ref={passwordConfirmRef}
           type='password'
