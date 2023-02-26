@@ -12,11 +12,13 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
+import {useStateContext} from '../contexts/ContextProvider';
 import axiosClient from "../axios-client.js";
 
 export default function UserForm() {
   const {id} = useParams();
   const navigate = useNavigate();
+  const {notification, setNotification} = useStateContext();
   /**@type {boolean} **/
   const [loading, setLoading] = useState(false);
   /** @type {ErrorsState} **/
@@ -63,6 +65,7 @@ export default function UserForm() {
       axiosClient.put(`/users/${user.id}`, user)
         .then(({data}) => {
           setLoading(false);
+          setNotification('User was successfully updated');
           navigate('/users')
         })
         .catch(err => {
@@ -83,6 +86,7 @@ export default function UserForm() {
       axiosClient.post('/users', user)
         .then(({data}) => {
           setLoading(false);
+          setNotification('User was successfully created');
           navigate('/users')
         })
         .catch(err => {
@@ -95,7 +99,7 @@ export default function UserForm() {
             console.error(err);
             setErrors({
               errors: 'Please contact with admin'
-            })
+            });
           }
         })
     }
