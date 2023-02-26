@@ -14,7 +14,7 @@ function DefaultLayout() {
     e.preventDefault();
 
     axiosClient.post('/logout')
-      .then( ()=>{
+      .then(() => {
         setUser({});
         setToken(null);
       });
@@ -27,6 +27,12 @@ function DefaultLayout() {
     axiosClient.get('/user')
       .then(({data}) => {
         setUser(data)
+      })
+      .catch((err) => {
+        if(err.response.status === 401){
+          setUser({});
+          setToken(null);
+        }
       })
   }, [])
 

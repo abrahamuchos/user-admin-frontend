@@ -32,7 +32,7 @@ export default function Login() {
         }else{
           console.error(err);
           setErrors({
-            errors: 'Please contact with admin'
+            errors: 'Upss! Something wrong, please try again'
           })
         }
       })
