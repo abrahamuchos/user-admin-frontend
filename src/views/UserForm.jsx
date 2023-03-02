@@ -12,8 +12,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from "react-router-dom";
-import {useStateContext} from '../contexts/ContextProvider';
+import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from "../axios-client.js";
+import handleErrors from "../handleErrors.js";
 
 export default function UserForm() {
   const {id} = useParams();
@@ -22,7 +23,7 @@ export default function UserForm() {
   /**@type {boolean} **/
   const [loading, setLoading] = useState(false);
   /** @type {ErrorsState} **/
-  const [errors, setErrors] = useState(null);
+  const [errors, setErrors] = useState({});
   /** @type {UserState} **/
   const [user, setUser] = useState({
     id: null,
@@ -31,7 +32,6 @@ export default function UserForm() {
     password: '',
     password_confirmation: ''
   });
-
 
   // To update user
   if (id) {
@@ -44,15 +44,11 @@ export default function UserForm() {
         })
         .catch(err => {
           setLoading(false);
-          //TODO: hacer un 404 para cuando el ID no exista
-          const response = err.response;
-          if (response && response.status === 422) {
-            setErrors(response.data.errors)
+          let getErrors = handleErrors(err);
+          if (getErrors.status === 404) {
+            navigate('*')
           } else {
-            console.error(err);
-            setErrors({
-              errors: 'Please contact with admin'
-            })
+            setErrors(getErrors)
           }
         })
     }, [])
@@ -70,47 +66,41 @@ export default function UserForm() {
         })
         .catch(err => {
           setLoading(false);
-          //TODO: hacer un 404 para cuando el ID no exista
-          const response = err.response;
-          if (response && response.status === 422) {
-            setErrors(response.data.errors)
+          let getErrors = handleErrors(err);
+          if (getErrors.status === 404) {
+            navigate('*')
           } else {
-            console.error(err);
-            setErrors({
-              errors: 'Please contact with admin'
-            })
+            setErrors(getErrors)
           }
         })
-
     } else {
       axiosClient.post('/users', user)
         .then(({data}) => {
           setLoading(false);
           setNotification('User was successfully created');
-          navigate('/users')
+          navigate('/users');
         })
         .catch(err => {
           setLoading(false);
-          //TODO: hacer un 404 para cuando el ID no exista
-          const response = err.response;
-          if (response && response.status === 422) {
-            setErrors(response.data.errors)
+          let getErrors = handleErrors(err);
+          if (getErrors.status === 404) {
+            navigate('*')
           } else {
-            console.error(err);
-            setErrors({
-              errors: 'Please contact with admin'
-            });
+            setErrors(getErrors)
           }
         })
     }
-
-
   }
 
   return (
     <>
+      {errors.hasOwnProperty('message') && <div className="alert">
+        {errors.message}
+      </div>
+      }
+
       {user.id ? (
-        <h1>Edite user {user.name}</h1>
+        <h1>Edit user {user.name}</h1>
       ) : (
         <h1>New user</h1>
       )}
@@ -118,8 +108,8 @@ export default function UserForm() {
         {loading && (
           <div className="text-center"> Loading ...</div>
         )}
-        {errors && <div className="alert">
-          {Object.values(errors).map((row, index) => <p key={index}>{row}</p>)}
+        {errors.hasOwnProperty('inputError') && <div className="alert">
+          {Object.values(errors.inputError).map((row, index) => <p key={index}>{row}</p>)}
         </div>
         }
         {!loading && (
